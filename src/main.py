@@ -42,35 +42,62 @@ def handle_hello():
 # Create a new user 
 @app.route('/user', methods=['POST'])
 def create_user():
-    try:
-        body = request.get_json()
-        # check if this email already exists
-        user = User.query.filter_by(email=body['email']).first()
-        if body is None:
-            raise APIException("You need to specify the request body as a json object", 400)
-        # Validations
-        if 'email' not in body:
-            raise APIException("You need to specify an email", 400)
-        # Exception when user exists
-        if user is not None: 
-            raise APIException("email is in use", 400)
-        if 'first_name' not in body:
-            raise APIException("You need to specify a first name", 400)
-        if 'last_name' not in body:
-            raise APIException("You need to specify a last name", 400)
-        if 'password' not in body:
-            raise APIException("You need to specify a password", 400)
-        if 'account_type' not in body:
-            raise APIException("You need to specify account type", 400)
-        if 'language' not in body:
-            raise APIException("You need to specify your language", 400)
-        user1 = User(first_name=body['first_name'], last_name=body['last_name'], email=body['email'], password=body['password'], account_type=body['account_type'], language=body['language'])
-        db.session.add(user1)
+    # try:
+    body = request.get_json()
+    # check if this email already exists
+    user = User.query.filter_by(email=body['email']).first()
+    if body is None:
+        raise APIException("You need to specify the request body as a json object", 400)
+    # Validations
+    if 'email' not in body:
+        raise APIException("You need to specify an email", 400)
+    # Exception when user exists
+    if user is not None: 
+        raise APIException("email is in use", 400)
+    if 'first_name' not in body:
+        raise APIException("You need to specify a first name", 400)
+    if 'last_name' not in body:
+        raise APIException("You need to specify a last name", 400)
+    if 'password' not in body:
+        raise APIException("You need to specify a password", 400)
+    if 'account_type' not in body:
+        raise APIException("You need to specify account type", 400)
+    if 'language' not in body:
+        raise APIException("You need to specify your language", 400)
+    user1 = User(first_name=body['first_name'], last_name=body['last_name'], email=body['email'], password=body['password'], account_type=body['account_type'], language=body['language'])
+    db.session.add(user1)
+    db.session.commit()
+    return jsonify("Success", 200)
+    # except:
+    #     return jsonify('Ohh no!! something went wrong, please try again', 400)
+
+# Single Users
+@app.route('/user/<int:user_id>', methods=['PUT', 'GET'])
+def handle_single_user(user_id):
+    body = request.get_json()
+    target_user = User.query.get(user_id)
+    # Modify an user
+    if request.method == 'PUT':
+        if target_user is None:
+            raise APIException('User not found', 404)
+        if "first_name" in body:
+            target_user.first_name = body["first_name"]
+        if "last_name" in body:
+            target_user.last_name = body["last_name"]
+        if "account_type" in body:
+            target_user.account_type = body["account_type"]
+        if "email" in body:
+            target_user.email = body["email"]
+        if "language" in body:
+            target_user.language = body["language"]
         db.session.commit()
         return jsonify("Success", 200)
-    except:
-        return jsonify('Ohh no!! something went wrong, please try again', 400)
-
+    # Get an user
+    if request.method == 'GET':
+        if target_user is None:
+            raise APIException('User not found', 404)
+        return jsonify(target_user.serialize(), 200)
+    return jsonify("Invalid Method", 404)
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
