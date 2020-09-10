@@ -16,13 +16,23 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.account_type
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "email": self.email,
+            "account_type": self.account_type,
+            "language": self.language
+        }
+
 class Teacher(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     instrument= db.Column(db.String(120), unique=False, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
-        return '<Teacher %r>' % self.user_id
+        return '<Teacher %r>' % self.id
 
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -31,11 +41,9 @@ class Student(db.Model):
 
 
     def __repr__(self):
-        return '<User %r>' % self.user_id
+        return '<User %r>' % self.id
 
-    def serialize(self):
-        return {
-            "id": self.id,
-            "email": self.email,
-            # do not serialize the password, its a security breach
-        }
+    
+
+        
+
