@@ -99,6 +99,25 @@ def handle_single_user(user_id):
         return jsonify(target_user.serialize(), 200)
     return jsonify("Invalid Method", 404)
 
+# Delete user
+@app.route('/user/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    target_user = User.query.get(user_id)
+    if target_user is None:
+        raise APIException('User not found', 404)
+    db.session.delete(target_user)
+    db.session.commit()
+    return jsonify("Success", 200)
+
+# Get all users
+@app.route('/users', methods=['GET'])
+def get_all_users():
+    users = User.query.all()
+    if users is None:
+        raise APIException('There are no users', 404)
+    all_users = list(map(lambda x: x.serialize(), users ))
+    return jsonify(all_users, 200)
+
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
