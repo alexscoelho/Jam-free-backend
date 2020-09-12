@@ -119,6 +119,16 @@ def get_all_users():
     all_users = list(map(lambda x: x.serialize(), users ))
     return jsonify(all_users, 200)
 
+
+# Filter Files
+@app.route('/file/<int:file_id>', methods=['GET'])
+def get_file(file_id):
+    single_file = Files.query.get(file_id) # query to the db to get the file
+    if single_file is None:
+        raise APIException('File not found', 404)
+    return jsonify(single_file.serialize(), 200) # Getting the file
+
+
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
