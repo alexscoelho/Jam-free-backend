@@ -12,6 +12,7 @@ class User(db.Model):
     language = db.Column(db.String(80), unique=False, nullable=False)
     teacher = db.relationship('Teacher', backref='user', uselist=False, lazy=True)
     student = db.relationship('Student', backref='user', uselist=False, lazy=True)
+    files = db.relationship('Files', backref='user', uselist=False, lazy=True)
 
     def __repr__(self):
         return '<User %r>' % self.account_type
@@ -31,6 +32,7 @@ class Teacher(db.Model):
     instrument= db.Column(db.String(120), unique=False, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+
     def __repr__(self):
         return '<Teacher %r>' % self.id
 
@@ -49,20 +51,20 @@ class Files(db.Model):
     type_file = db.Column(db.String(120), unique=False, nullable=False)
     level = db.Column(db.String(120), unique=False, nullable=False)
     language = db.Column(db.String(120), unique=False, nullable=False)
-    teacher = db.relationship('Teacher', backref='user', uselist=False, lazy=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) # agregarlo a los usuarios
+    
 
     def __repr__(self):
-            return '<Files %r>' % self.id
+            return '<User %r>' % self.id
 
-    def serialize(self):
-        return {
-            "id": self.id,
-            "instrument": self.instrument,
-            "last_name": self.last_name,
-            "email": self.email,
-            "account_type": self.account_type,
-            "language": self.language
-        }
+    # def serialize(self):
+    #     return {
+    #         "id": self.id,
+    #         "instrument": self.instrument,
+    #         "type_file": self.type_file,
+    #         "level": self.level,
+    #         "language": self.language,
+    #     }
 
     
 
