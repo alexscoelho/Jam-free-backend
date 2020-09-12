@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, url_for
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
-from utils import APIException, generate_sitemap
+from utils import APIException, generate_sitemap # APIException es un method
 from admin import setup_admin
 from models import db, User, Teacher, Student
 #from models import Person
@@ -127,6 +127,15 @@ def get_file(file_id):
     if single_file is None:
         raise APIException('File not found', 404)
     return jsonify(single_file.serialize(), 200) # Getting the file
+
+# Get all files
+@app.route('/files', methods=['GET'])
+def get_all_files():
+    files = File.query.all() # Get all files
+    if files is None:
+        raise APIException('There are no files', 404)
+    all_files = list(map(lambda x: x.serialize(), files ))
+    return jsonify(all_files, 200)
 
 
 # this only runs if `$ python src/main.py` is executed
