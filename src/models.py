@@ -54,16 +54,16 @@ class Files(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) # agregarlo a los usuario
 
     def __repr__(self):
-            return '<User %r>' % self.id
+            return '<Files %r>' % self.id
 
-    # def serialize(self):
-    #     return {
-    #         "id": self.id,
-    #         "instrument": self.instrument,
-    #         "type_file": self.type_file,
-    #         "level": self.level,
-    #         "language": self.language,
-    #     }
+    def serialize(self):
+        return {
+             "id": self.id,
+             "instrument": self.instrument,
+             "type_file": self.type_file,
+             "level": self.level,
+             "language": self.language,
+        }
 
     
 

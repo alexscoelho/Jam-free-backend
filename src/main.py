@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap # APIException es un method
 from admin import setup_admin
-from models import db, User, Teacher, Student
+from models import db, User, Teacher, Student, Files
 #from models import Person
 
 app = Flask(__name__)
@@ -128,14 +128,27 @@ def get_file(file_id):
         raise APIException('File not found', 404)
     return jsonify(single_file.serialize(), 200) # Getting the file
 
+
 # Get all files
 @app.route('/files', methods=['GET'])
 def get_all_files():
-    files = File.query.all() # Get all files
+    files = Files.query.all() # Get all files
     if files is None:
         raise APIException('There are no files', 404)
     all_files = list(map(lambda x: x.serialize(), files ))
     return jsonify(all_files, 200)
+
+# Delete file
+@app.route('/file/<int:file_id>', methods=['DELETE'])
+def delete_file(file_id):
+    target_file = Files.query.get(file_id)
+    if target_file is None:
+        raise APIException('File not found', 404)
+    db.session.delete(target_file)                  # Delete method
+    db.session.commit()                             # save changes
+    return jsonify("Success", 200)
+
+
 
 
 # this only runs if `$ python src/main.py` is executed
