@@ -10,8 +10,13 @@ class User(db.Model):
     password = db.Column(db.String(80), unique=False, nullable=False)
     account_type = db.Column(db.String(80), unique=False, nullable=False)
     language = db.Column(db.String(80), unique=False, nullable=False)
+    username = db.Column(db.String(120), unique=True, nullable=True)
+    instrument = db.Column(db.String(120), unique=False, nullable=True)
+    level = db.Column(db.String(80), unique=False, nullable=True)
+    description = db.Column(db.String(120), unique=False, nullable=True)
     teacher = db.relationship('Teacher', backref='user', uselist=False, lazy=True)
     student = db.relationship('Student', backref='user', uselist=False, lazy=True)
+
 
     def __repr__(self):
         return '<User %r>' % self.account_type
@@ -23,7 +28,11 @@ class User(db.Model):
             "last_name": self.last_name,
             "email": self.email,
             "account_type": self.account_type,
-            "language": self.language
+            "language": self.language,
+            "username": self.username,
+            "instrument": self.instrument,
+            "level": self.level,
+            "description": self.description
         }
 
 class Teacher(db.Model):

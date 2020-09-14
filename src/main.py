@@ -91,6 +91,14 @@ def handle_single_user(user_id):
             target_user.email = body["email"]
         if "language" in body:
             target_user.language = body["language"]
+        if "username" in body:
+            target_user.username = body["username"]
+        if "instrument" in body:
+            target_user.instrument = body["instrument"]  
+        if "level" in body:
+            target_user.level = body["level"]
+        if "description" in body:
+            target_user.description = body["description"]              
         db.session.commit()
         return jsonify("Success", 200)
     # Get an user
