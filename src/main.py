@@ -3,6 +3,9 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 import os
 from flask import Flask, request, jsonify, url_for
+# from flask_jwt_simple import (
+#     JWTManager, jwt_required, create_jwt, get_jwt_identity
+# )
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
@@ -19,6 +22,11 @@ MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
 setup_admin(app)
+
+# # Setup the Flask-JWT-Simple extension
+# app.config['JWT_SECRET_KEY'] = 'jammfree-app'  
+# jwt = JWTManager(app)
+
 
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
