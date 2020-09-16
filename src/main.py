@@ -3,9 +3,9 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 import os
 from flask import Flask, request, jsonify, url_for
-# from flask_jwt_simple import (
-#     JWTManager, jwt_required, create_jwt, get_jwt_identity
-# )
+from flask_jwt_simple import (
+    JWTManager, jwt_required, create_jwt, get_jwt_identity
+)
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
@@ -23,9 +23,9 @@ db.init_app(app)
 CORS(app)
 setup_admin(app)
 
-# # Setup the Flask-JWT-Simple extension
-# app.config['JWT_SECRET_KEY'] = 'jammfree-app'  
-# jwt = JWTManager(app)
+# Setup the Flask-JWT-Simple extension
+app.config['JWT_SECRET_KEY'] = 'jammfree-app'  
+jwt = JWTManager(app)
 
 
 # Handle/serialize errors like a JSON object
@@ -82,6 +82,7 @@ def create_user():
 
 # Single Users
 @app.route('/user/<int:user_id>', methods=['PUT', 'GET'])
+@jwt_required
 def handle_single_user(user_id):
     body = request.get_json()
     target_user = User.query.get(user_id)
@@ -134,6 +135,35 @@ def get_all_users():
         raise APIException('There are no users', 404)
     all_users = list(map(lambda x: x.serialize(), users ))
     return jsonify(all_users, 200)
+
+# Login
+# # Provide a method to create access tokens. The create_jwt()
+# # function is used to actually generate the token
+@app.route('/login', methods=['POST'])
+def login():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
+    params = request.get_json()
+    email = params.get('email', None)
+    password = params.get('password', None)
+
+    
+    login_user = User.query.filter_by(email= email).first()
+    print("login_user:", login_user)
+
+    if not email:
+        return jsonify({"msg": "Missing email parameter"}), 400
+    if not password:
+        return jsonify({"msg": "Missing password parameter"}), 400
+
+    if email != login_user.email or password != login_user.password:
+        return jsonify({"msg": "Bad email or password"}), 401
+    
+# Identity can be any data that is json serializable
+    ret = {'jwt': create_jwt(identity=email)}
+    return jsonify(ret), 200
+  
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
