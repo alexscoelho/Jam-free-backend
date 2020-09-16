@@ -16,6 +16,7 @@ class User(db.Model):
     description = db.Column(db.String(120), unique=False, nullable=True)
     teacher = db.relationship('Teacher', backref='user', uselist=False, lazy=True)
     student = db.relationship('Student', backref='user', uselist=False, lazy=True)
+    files = db.relationship('Files', backref='user', uselist=False, lazy=True)
 
 
     def __repr__(self):
@@ -40,6 +41,7 @@ class Teacher(db.Model):
     instrument= db.Column(db.String(120), unique=False, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+
     def __repr__(self):
         return '<Teacher %r>' % self.id
 
@@ -51,6 +53,32 @@ class Student(db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.id
+
+class Files(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    instrument = db.Column(db.String(120), unique=False, nullable=False)
+    type_file = db.Column(db.String(120), unique=False, nullable=False)
+    level = db.Column(db.String(120), unique=False, nullable=False)
+    language = db.Column(db.String(120), unique=False, nullable=False)
+    url = db.Column(db.String(120), unique=False, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # agregarlo a los usuario
+
+    def __repr__(self):
+            return '<Files %r>' % self.id
+
+    def serialize(self):
+        return {
+             "id": self.id,
+             "instrument": self.instrument,
+             "type_file": self.type_file,
+             "level": self.level,
+             "language": self.language,
+        }
+
+    
+
+
+
 
     
 

@@ -9,9 +9,9 @@ from flask import Flask, request, jsonify, url_for
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
-from utils import APIException, generate_sitemap
+from utils import APIException, generate_sitemap # APIException es un method
 from admin import setup_admin
-from models import db, User, Teacher, Student
+from models import db, User, Teacher, Student, Files
 #from models import Person
 
 app = Flask(__name__)
@@ -135,6 +135,70 @@ def get_all_users():
     all_users = list(map(lambda x: x.serialize(), users ))
     return jsonify(all_users, 200)
 
+
+# Filter Files
+@app.route('/file/<int:file_id>', methods=['GET'])
+def get_file(file_id):
+    single_file = Files.query.get(file_id) # query to the db to get the file
+    if single_file is None:
+        raise APIException('File not found', 404)
+    return jsonify(single_file.serialize(), 200) # Getting the file
+
+
+# Get all files
+@app.route('/files', methods=['GET'])
+def get_all_files():
+    files = Files.query.all() # Get all files
+    if files is None:
+        raise APIException('There are no files', 404)
+    all_files = list(map(lambda x: x.serialize(), files )) # el x es el element, param files
+    return jsonify(all_files, 200)
+
+
+# Delete file
+@app.route('/file/<int:file_id>', methods=['DELETE'])
+def delete_file(file_id):
+    target_file = Files.query.get(file_id)
+    if target_file is None:
+        raise APIException('File not found', 404)
+    db.session.delete(target_file)                  # Delete method
+    db.session.commit()                             # save changes
+    return jsonify("Success", 200)
+
+
+# Create File
+@app.route('/file', methods=['POST'])
+def create_file(): #encapsular accion
+    body = request.get_json() # encapsula el paquete enviado del postman, recibe json y lo convierte al lenguaje del diccionario
+    print(body)
+    single_file = Files(instrument=body['instrument'], type_file=body['typeFile'], level=body['level'], language=body['language'], url=body['url'])
+    db.session.add(single_file) # adding user
+    db.session.commit() # commiting what we add
+    return jsonify(body, 200)
+
+# Edit File
+@app.route('/file/<int:file_id>', methods=['PUT'])
+def edit_file(file_id):
+    body = request.get_json()
+    single_file = Files.query.get(file_id) # get a unique file
+    if single_file is None: # handling error
+        raise APIException('File not found', status_code = 404)
+    if "instrument" in body:
+        single_file.instrument = body['instrument']
+    if "typeFile" in body:
+        single_file.type_file = body['typeFile']
+    if "level" in body:
+        single_file.level = body['level']  
+    if "language" in body:
+        single_file.language = body['language']
+    if "url" in body:
+        single_file.url = body['url']
+    db.session.commit()
+    return jsonify(body), 200
+
+    
+
+    
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
