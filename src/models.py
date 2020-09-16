@@ -51,7 +51,8 @@ class Files(db.Model):
     type_file = db.Column(db.String(120), unique=False, nullable=False)
     level = db.Column(db.String(120), unique=False, nullable=False)
     language = db.Column(db.String(120), unique=False, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) # agregarlo a los usuario
+    url = db.Column(db.String(120), unique=False, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # agregarlo a los usuario
 
     def __repr__(self):
             return '<Files %r>' % self.id

@@ -135,8 +135,9 @@ def get_all_files():
     files = Files.query.all() # Get all files
     if files is None:
         raise APIException('There are no files', 404)
-    all_files = list(map(lambda x: x.serialize(), files ))
+    all_files = list(map(lambda x: x.serialize(), files )) # el x es el element, param files
     return jsonify(all_files, 200)
+
 
 # Delete file
 @app.route('/file/<int:file_id>', methods=['DELETE'])
@@ -149,8 +150,39 @@ def delete_file(file_id):
     return jsonify("Success", 200)
 
 
+# Create File
+@app.route('/file', methods=['POST'])
+def create_file(): #encapsular accion
+    body = request.get_json() # encapsula el paquete enviado del postman, recibe json y lo convierte al lenguaje del diccionario
+    print(body)
+    single_file = Files(instrument=body['instrument'], type_file=body['typeFile'], level=body['level'], language=body['language'], url=body['url'])
+    db.session.add(single_file) # adding user
+    db.session.commit() # commiting what we add
+    return jsonify(body, 200)
 
+# Edit File
+@app.route('/file/<int:file_id>', methods=['PUT'])
+def edit_file(file_id):
+    body = request.get_json()
+    single_file = Files.query.get(file_id) # get a unique file
+    if single_file is None: # handling error
+        raise APIException('File not found', status_code = 404)
+    if "instrument" in body:
+        single_file.instrument = body['instrument']
+    if "typeFile" in body:
+        single_file.type_file = body['typeFile']
+    if "level" in body:
+        single_file.level = body['level']  
+    if "language" in body:
+        single_file.language = body['language']
+    if "url" in body:
+        single_file.url = body['url']
+    db.session.commit()
+    return jsonify(body), 200
 
+    
+
+    
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
