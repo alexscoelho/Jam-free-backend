@@ -119,6 +119,7 @@ def handle_single_user(user_id):
 
 # Delete user
 @app.route('/user/<int:user_id>', methods=['DELETE'])
+@jwt_required
 def delete_user(user_id):
     target_user = User.query.get(user_id)
     if target_user is None:
