@@ -128,6 +128,8 @@ def delete_user(user_id):
     db.session.commit()
     return jsonify("Success", 200)
 
+
+
 # Get all users
 @app.route('/users', methods=['GET'])
 def get_all_users():
@@ -151,7 +153,8 @@ def login():
 
     
     login_user = User.query.filter_by(email= email).first()
-    print("login_user:", login_user)
+    # print("login_user:", login_user)
+    
 
     if not email:
         return jsonify({"msg": "Missing email parameter"}), 400
@@ -162,9 +165,19 @@ def login():
         return jsonify({"msg": "Bad email or password"}), 401
     
 # Identity can be any data that is json serializable
-    ret = {'jwt': create_jwt(identity=email)}
+    ret = {
+        'jwt': create_jwt(identity=email),
+        'userId': login_user.id
+    }
     return jsonify(ret), 200
-  
+
+# # # Protected routes
+# @app.route('/main', methods=['GET'])
+# @jwt_required
+# def protected():
+#     # Access the identity of the current user with get_jwt_identity
+#     return jsonify({'hello_from': get_jwt_identity()}), 200
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
