@@ -87,29 +87,41 @@ def handle_single_user(user_id):
     body = request.get_json()
     target_user = User.query.get(user_id)
     # Modify an user
-    if request.method == 'PUT':
-        if target_user is None:
-            raise APIException('User not found', 404)
-        if "first_name" in body:
-            target_user.first_name = body["first_name"]
-        if "last_name" in body:
-            target_user.last_name = body["last_name"]
-        if "account_type" in body:
-            target_user.account_type = body["account_type"]
-        if "email" in body:
-            target_user.email = body["email"]
-        if "language" in body:
-            target_user.language = body["language"]
-        if "username" in body:
-            target_user.username = body["username"]
-        if "instrument" in body:
-            target_user.instrument = body["instrument"]  
-        if "level" in body:
-            target_user.level = body["level"]
-        if "description" in body:
-            target_user.description = body["description"]              
-        db.session.commit()
-        return jsonify("Success", 200)
+    try:
+        if request.method == 'PUT':
+            if target_user is None:
+                raise APIException('User not found', 404)
+            if "first_name" in body:
+                target_user.first_name = body["first_name"]
+            if "last_name" in body:
+                target_user.last_name = body["last_name"]
+            if "account_type" in body:
+                target_user.account_type = body["account_type"]
+            if "email" in body:
+                target_user.email = body["email"]
+            if "language" in body:
+                target_user.language = body["language"]
+            
+
+            # check if this username already exists
+            username_exists = User.query.filter_by(username=body['username']).first()
+            # Exception when user exists
+            if username_exists is not None: 
+                raise APIException("username is in use", 400)
+            if "username" in body:
+                target_user.username = body["username"]
+
+            if "instrument" in body:
+                target_user.instrument = body["instrument"]  
+            if "level" in body:
+                target_user.level = body["level"]
+            if "description" in body:
+                target_user.description = body["description"]              
+            db.session.commit()
+            return jsonify("Success", 200)
+    except Exception as e:
+        return jsonify(e.__dict__)  
+
     # Get an user
     if request.method == 'GET':
         if target_user is None:
