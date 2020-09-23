@@ -70,9 +70,11 @@ class Files(db.Model):
         return {
              "id": self.id,
              "instrument": self.instrument,
-             "type_file": self.type_file,
+             "typeFile": self.type_file,
              "level": self.level,
              "language": self.language,
+             "url": self.url,
+             "userId": self.user_id
         }
 
     
