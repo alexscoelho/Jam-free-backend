@@ -163,7 +163,7 @@ def get_file(file_id):
 
 # Get all files
 @app.route('/files', methods=['GET'])
-@jwt_required
+# @jwt_required
 def get_all_files():
     files = Files.query.all() # Get all files
     if files is None:
@@ -188,7 +188,7 @@ def delete_file(file_id):
 def create_file(): #encapsular accion
     body = request.get_json() # encapsula el paquete enviado del postman, recibe json y lo convierte al lenguaje del diccionario
     print(body)
-    single_file = Files(instrument=body['instrument'], type_file=body['typeFile'], level=body['level'], language=body['language'], url=body['url'], user_id=body['userId'])
+    single_file = Files(instrument=body['instrument'], type_file=body['typeFile'], level=body['level'], language=body['language'], url=body['url'], user_id=body['userId'], title=body['title'])
     db.session.add(single_file) # adding user
     db.session.commit() # commiting what we add
     return jsonify(body, 200)

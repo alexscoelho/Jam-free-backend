@@ -61,6 +61,7 @@ class Files(db.Model):
     level = db.Column(db.String(120), unique=False, nullable=False)
     language = db.Column(db.String(120), unique=False, nullable=False)
     url = db.Column(db.String(120), unique=False, nullable=False)
+    title = db.Column(db.String(120), unique= False, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # agregarlo a los usuario
 
     def __repr__(self):
@@ -74,7 +75,8 @@ class Files(db.Model):
              "level": self.level,
              "language": self.language,
              "url": self.url,
-             "userId": self.user_id
+             "userId": self.user_id,
+             "title": self.title
         }
 
     
