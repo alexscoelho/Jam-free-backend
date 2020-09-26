@@ -68,12 +68,14 @@ def create_user():
             raise APIException("You need to specify account type", 400)
         if 'language' not in body:
             raise APIException("You need to specify your language", 400)
+        if 'customer_id' not in body:
+            raise APIException("You need to specify your customer id", 400)
         # check if this email already exists
         user_exists = User.query.filter_by(email=body['email']).first()
         # Exception when user exists
         if user_exists is not None: 
             raise APIException("email is in use", 400)
-        user = User(first_name=body['first_name'], last_name=body['last_name'], email=body['email'], password=body['password'], account_type=body['account_type'], language=body['language'])
+        user = User(first_name=body['first_name'], last_name=body['last_name'], email=body['email'], password=body['password'], account_type=body['account_type'], language=body['language'], customer_id=body["customer_id"])
         db.session.add(user)
         db.session.commit()
         return jsonify("Success", 200)
