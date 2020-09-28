@@ -89,6 +89,7 @@ def handle_single_user(user_id):
     body = request.get_json()
     target_user = User.query.get(user_id)
     # Modify an user
+   
     try:
         if request.method == 'PUT':
             if target_user is None:
@@ -106,13 +107,16 @@ def handle_single_user(user_id):
             
 
             # check if this username already exists
-            username_exists = User.query.filter_by(username=body['username']).first()
+            # username_exists = User.query.filter_by(username=body['username']).first()
             # Exception when user exists
-            if username_exists is not None: 
-                raise APIException("username is in use", 400)
+            # if username_exists is not None: 
+            #     raise APIException("username is in use", 400)
             if "username" in body:
+                username_exists = User.query.filter_by(username=body['username']).first()
+                if username_exists is not None: 
+                    raise APIException("username is in use", 400)
                 target_user.username = body["username"]
-
+            
             if "instrument" in body:
                 target_user.instrument = body["instrument"]  
             if "level" in body:
@@ -120,10 +124,12 @@ def handle_single_user(user_id):
             if "description" in body:
                 target_user.description = body["description"]              
             db.session.commit()
+            
+            # return jsonify(target_user.serialize()),200
             return jsonify("Success", 200)
     except Exception as e:
         return jsonify(e.__dict__)  
-
+    
     # Get an user
     if request.method == 'GET':
         if target_user is None:
@@ -213,7 +219,7 @@ def edit_file(file_id):
     if "url" in body:
         single_file.url = body['url']
     db.session.commit()
-    return jsonify(body), 200
+    return jsonify(body, 200)
 
     
 
