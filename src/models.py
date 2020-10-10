@@ -18,6 +18,7 @@ class User(db.Model):
     student = db.relationship('Student', backref='user', uselist=False, lazy=True)
     files = db.relationship('Files', backref='user', uselist=False, lazy=True)
     customer_id = db.Column(db.String(50), unique=False, nullable=False)
+    profile_picture = db.Column(db.String(200), unique=False, nullable=True)
 
 
     def __repr__(self):
@@ -35,7 +36,8 @@ class User(db.Model):
             "instrument": self.instrument,
             "level": self.level,
             "description": self.description,
-            "customer_id": self.customer_id
+            "customer_id": self.customer_id,
+            "profile_picture": self.profile_picture
         }
 
 class Teacher(db.Model):

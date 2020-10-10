@@ -13,6 +13,15 @@ from utils import APIException, generate_sitemap # APIException es un method
 from admin import setup_admin
 from models import db, User, Teacher, Student, Files
 #from models import Person
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+cloudinary.config( 
+  cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'), 
+  api_key = os.environ.get('CLOUDINARY_API_KEY'), 
+  api_secret = os.environ.get('CLOUDINARY_API_SECRET') 
+)
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -83,28 +92,35 @@ def create_user():
         return jsonify(e.__dict__)
 
 # Single Users
-@app.route('/user/<int:user_id>', methods=['PUT', 'GET'])
+@app.route('/user/<int:user_id>', methods=['POST', 'GET'])
 @jwt_required
 def handle_single_user(user_id):
-    body = request.get_json()
     target_user = User.query.get(user_id)
-    # Modify an user
-   
-    try:
-        if request.method == 'PUT':
+    
+    if request.method == 'POST':
+        try:
+            body=request.form
+            # Get all form data fields
+            first_name = request.form["first_name"]
+            last_name = request.form["last_name"]
+            language = request.form["language"]
+            instrument = request.form["instrument"]
+            level = request.form["level"]
+            description = request.form["description"]
+            profile_picture = request.files["profile_picture"]
+
+            print(request.form["first_name"])
+            
+            # Modify an user
             if target_user is None:
                 raise APIException('User not found', 404)
             if "first_name" in body:
-                target_user.first_name = body["first_name"]
+                target_user.first_name = first_name
             if "last_name" in body:
-                target_user.last_name = body["last_name"]
-            if "account_type" in body:
-                target_user.account_type = body["account_type"]
-            if "email" in body:
-                target_user.email = body["email"]
+                target_user.last_name = last_name
             if "language" in body:
-                target_user.language = body["language"]
-            
+                target_user.language = language
+                
 
             # check if this username already exists
             # username_exists = User.query.filter_by(username=body['username']).first()
@@ -112,23 +128,42 @@ def handle_single_user(user_id):
             # if username_exists is not None: 
             #     raise APIException("username is in use", 400)
             if "username" in body:
-                username_exists = User.query.filter_by(username=body['username']).first()
+                username_exists = User.query.filter_by(username=username).first()
                 if username_exists is not None: 
                     raise APIException("username is in use", 400)
-                target_user.username = body["username"]
+                target_user.username = username
             
             if "instrument" in body:
-                target_user.instrument = body["instrument"]  
+                target_user.instrument = instrument  
             if "level" in body:
-                target_user.level = body["level"]
+                target_user.level = level
             if "description" in body:
-                target_user.description = body["description"]              
+                target_user.description = description  
+
+            if "username" in body:
+                username_exists = User.query.filter_by(username=username).first()
+                if username_exists is not None: 
+                    raise APIException("username is in use", 400)
+                target_user.username = username
+
+            
+            if profile_picture is not None:
+                print('picture attached')
+                # upload box to cloudinary
+                profile_picture_upload_result = cloudinary.uploader.upload( 
+                    profile_picture ,
+                    options = {
+                        "use_filename": True  # use filename as public id on cloudinary
+                    }
+                )
+                target_user.profile_picture = profile_picture_upload_result['secure_url']
+                        
             db.session.commit()
             
             # return jsonify(target_user.serialize()),200
             return jsonify("Success", 200)
-    except Exception as e:
-        return jsonify(e.__dict__)  
+        except Exception as e:
+            return jsonify(e.__dict__)  
     
     # Get an user
     if request.method == 'GET':
@@ -218,6 +253,8 @@ def edit_file(file_id):
         single_file.language = body['language']
     if "url" in body:
         single_file.url = body['url']
+    if "title" in body:
+        single_file.title = body['title']
     db.session.commit()
     return jsonify(body, 200)
 
