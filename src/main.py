@@ -108,6 +108,7 @@ def handle_single_user(user_id):
             level = request.form["level"]
             description = request.form["description"]
             profile_picture = request.files["profile_picture"]
+            # username = request.form["username"]
 
             print(request.form["first_name"])
             
@@ -122,16 +123,22 @@ def handle_single_user(user_id):
                 target_user.language = language
                 
 
+            # if "username" in body:
+            #     username_exists = User.query.filter_by(username=username).first()
+            #     if username_exists is not None: 
+            #         raise APIException("username is in use", 400)
+            #     target_user.username = username
+
             # check if this username already exists
             # username_exists = User.query.filter_by(username=body['username']).first()
             # Exception when user exists
             # if username_exists is not None: 
             #     raise APIException("username is in use", 400)
-            if "username" in body:
-                username_exists = User.query.filter_by(username=username).first()
-                if username_exists is not None: 
-                    raise APIException("username is in use", 400)
-                target_user.username = username
+            # if "username" in body:
+            #     username_exists = User.query.filter_by(username=username).first()
+            #     if username_exists is not None: 
+            #         raise APIException("username is in use", 400)
+            #     target_user.username = username
             
             if "instrument" in body:
                 target_user.instrument = instrument  
@@ -140,11 +147,11 @@ def handle_single_user(user_id):
             if "description" in body:
                 target_user.description = description  
 
-            if "username" in body:
-                username_exists = User.query.filter_by(username=username).first()
-                if username_exists is not None: 
-                    raise APIException("username is in use", 400)
-                target_user.username = username
+            # if "username" in body:
+            #     username_exists = User.query.filter_by(username=username).first()
+            #     if username_exists is not None: 
+            #         raise APIException("username is in use", 400)
+            #     target_user.username = username
 
             
             if profile_picture is not None:
