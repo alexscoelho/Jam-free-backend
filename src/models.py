@@ -67,6 +67,7 @@ class Files(db.Model):
     url = db.Column(db.String(120), unique=False, nullable=False)
     title = db.Column(db.String(120), unique= False, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # agregarlo a los usuario
+    file_upload = db.Column(db.String(200), unique=False, nullable=True)
 
     def __repr__(self):
             return '<Files %r>' % self.id
@@ -80,7 +81,8 @@ class Files(db.Model):
              "language": self.language,
              "url": self.url,
              "userId": self.user_id,
-             "title": self.title
+             "title": self.title,
+             "file_upload": self.file_upload
         }
 
     

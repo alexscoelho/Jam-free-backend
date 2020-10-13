@@ -236,9 +236,35 @@ def delete_file(file_id):
 # Create File
 @app.route('/file', methods=['POST'])
 def create_file(): #encapsular accion
-    body = request.get_json() # encapsula el paquete enviado del postman, recibe json y lo convierte al lenguaje del diccionario
-    print(body)
-    single_file = Files(instrument=body['instrument'], type_file=body['typeFile'], level=body['level'], language=body['language'], url=body['url'], user_id=body['userId'], title=body['title'])
+    body=request.form # encapsula el paquete enviado del postman, recibe json y lo convierte al lenguaje del diccionario
+
+    instrument = request.form["instrument"]
+    type_file = request.form["typeFile"]
+    level = request.form["level"]
+    language = request.form["language"]
+    url = request.form["url"]
+    user_id = request.form['userId']
+    title = request.form['title']
+    file_upload = request.files['file_upload']
+
+    print(request.form["instrument"])
+
+
+    single_file = Files(instrument=instrument, type_file=type_file, level=level, language=language, url=url, user_id=user_id, title=title)
+    # single_file = Files(instrument=body['instrument'], type_file=body['typeFile'], level=body['level'], language=body['language'], url=body['url'], user_id=body['userId'], title=body['title'], file_upload=request.files['file_upload'])
+
+    if file_upload is not None:
+        # upload to cloudinary
+        print('picture attached')
+        file_upload_result = cloudinary.uploader.upload(
+            file_upload, 
+            options = {
+                "use_filename": True
+            }
+        )
+        single_file.file_upload = file_upload_result['secure_url']
+        print("singlefile:",single_file)
+
     db.session.add(single_file) # adding user
     db.session.commit() # commiting what we add
     return jsonify(body, 200)
