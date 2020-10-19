@@ -3,7 +3,7 @@
 1. How to create an empty database
 2. How to create your models
 3. How to add endpoints
-4. Using the /admin
+4. Using the / admin
 
 ## Creating a Database
 
