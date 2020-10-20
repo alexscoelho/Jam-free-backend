@@ -93,7 +93,7 @@ def create_user():
 
 # Single Users
 @app.route('/user/<int:user_id>', methods=['POST', 'GET'])
-@jwt_required
+# @jwt_required
 def handle_single_user(user_id):
     target_user = User.query.get(user_id)
     
@@ -111,6 +111,7 @@ def handle_single_user(user_id):
             # username = request.form["username"]
 
             print(request.form["first_name"])
+            print('hola hola')
             
             # Modify an user
             if target_user is None:
@@ -166,8 +167,11 @@ def handle_single_user(user_id):
                 target_user.profile_picture = profile_picture_upload_result['secure_url']
                         
             db.session.commit()
+
+            print(target_user.serialize())
             
             # return jsonify(target_user.serialize()),200
+            # print(jsonify(target_user.serialize()),200)
             return jsonify("Success", 200)
         except Exception as e:
             return jsonify(e.__dict__)  
