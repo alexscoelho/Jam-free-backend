@@ -96,6 +96,8 @@ def create_user():
 # @jwt_required
 def handle_single_user(user_id):
     target_user = User.query.get(user_id)
+
+    print(target_user)
     
     if request.method == 'POST':
         try:
@@ -110,8 +112,8 @@ def handle_single_user(user_id):
             profile_picture = request.files["profile_picture"]
             # username = request.form["username"]
 
-            print(request.form["first_name"])
-            print('hola hola')
+            print(first_name)
+            
             
             # Modify an user
             if target_user is None:
@@ -154,7 +156,7 @@ def handle_single_user(user_id):
             #         raise APIException("username is in use", 400)
             #     target_user.username = username
 
-            
+            print(target_user)
             if profile_picture is not None:
                 print('picture attached')
                 # upload box to cloudinary
@@ -165,12 +167,14 @@ def handle_single_user(user_id):
                     }
                 )
                 target_user.profile_picture = profile_picture_upload_result['secure_url']
+
+            print(target_user)
                         
             db.session.commit()
 
             print(target_user.serialize())
             
-            # return jsonify(target_user.serialize()),200
+            return jsonify(target_user.serialize()),200
             # print(jsonify(target_user.serialize()),200)
             return jsonify("Success", 200)
         except Exception as e:
