@@ -168,7 +168,7 @@ def handle_single_user(user_id):
                 )
                 target_user.profile_picture = profile_picture_upload_result['secure_url']
 
-            print(target_user)
+            print("before dbsession",target_user)
                         
             db.session.commit()
 
