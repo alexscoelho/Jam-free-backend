@@ -97,7 +97,6 @@ def create_user():
 def handle_single_user(user_id):
     target_user = User.query.get(user_id)
 
-    print(target_user)
     
     if request.method == 'POST':
         try:
@@ -112,9 +111,7 @@ def handle_single_user(user_id):
             profile_picture = request.files["profile_picture"]
             # username = request.form["username"]
 
-            print(first_name)
-            
-            
+           
             # Modify an user
             if target_user is None:
                 raise APIException('User not found', 404)
@@ -157,16 +154,16 @@ def handle_single_user(user_id):
             #     target_user.username = username
 
             print(target_user)
-            if profile_picture is not None:
-                print('picture attached')
-                # upload box to cloudinary
-                profile_picture_upload_result = cloudinary.uploader.upload( 
-                    profile_picture ,
-                    options = {
-                        "use_filename": True  # use filename as public id on cloudinary
-                    }
-                )
-                target_user.profile_picture = profile_picture_upload_result['secure_url']
+            # if profile_picture is not None:
+            #     print('picture attached')
+            #     # upload box to cloudinary
+            #     profile_picture_upload_result = cloudinary.uploader.upload( 
+            #         profile_picture ,
+            #         options = {
+            #             "use_filename": True  # use filename as public id on cloudinary
+            #         }
+            #     )
+            #     target_user.profile_picture = profile_picture_upload_result['secure_url']
 
             print("before dbsession",target_user)
                         
@@ -246,14 +243,14 @@ def delete_file(file_id):
 def create_file(): #encapsular accion
     body=request.form # encapsula el paquete enviado del postman, recibe json y lo convierte al lenguaje del diccionario
 
-    instrument = request.form["instrument"]
-    type_file = request.form["typeFile"]
-    level = request.form["level"]
-    language = request.form["language"]
-    url = request.form["url"]
-    user_id = request.form['userId']
-    title = request.form['title']
-    file_upload = request.files['file_upload']
+    instrument = body["instrument"]
+    type_file = body["typeFile"]
+    level = body["level"]
+    language = body["language"]
+    url = body["url"]
+    user_id = body['userId']
+    title = body['title']
+    file_upload = body['file_upload']
 
     print(request.form["instrument"])
 
